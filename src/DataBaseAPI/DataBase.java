@@ -137,6 +137,12 @@ public class DataBase {
         dataBaseStructure();
     }
 
+    public void addForeignKey(String tableName, String columnName, String foreignTableName, String foreignColumnName) throws SQLException {
+        execute("ALTER TABLE " + tableName + " ADD FOREIGN KEY ( " + columnName + " ) REFERENCES " + foreignTableName + "( " + foreignColumnName + " )");
+        System.out.println("foreign key  added!!");
+        dataBaseStructure();
+    }
+
     public void DeleteColumn(String tableName, String ColumnName) throws SQLException {
         execute("ALTER TABLE " + tableName + " DROP " + ColumnName);
         System.out.println("Column " + ColumnName + " deleted!!");
@@ -319,21 +325,26 @@ public class DataBase {
     }
 
     public void makeJTable(String tableName, JTable tableOnForm) throws SQLException {
+        DefaultTableModel m = (DefaultTableModel) tableOnForm.getModel();
+
+        //delete old columns
+        m.setColumnCount(0);
+
+        //set new columns
+        DataBase = dataBaseStructure();
+        for (Table table : DataBase) {
+            if (table.getTableName().equals(tableName)) {
+                for (Table.Column col : table.getColumnsNames()) {
+                    m.addColumn(col.getColumnName());
+                }
+            }
+        }
+        
+        ////delete old columns data
+        m.setRowCount(0);
 
         column = getAllTableData(tableName);
         if (column != null) {
-            DefaultTableModel m = (DefaultTableModel) tableOnForm.getModel();
-
-            //delete old columns
-            m.setColumnCount(0);
-            ////delete old columns data
-            m.setRowCount(0);
-
-            //set new columns
-            for (Table.Column col : column) {
-                m.addColumn(col.getColumnName());
-            }
-
             //set columns data
             Object[] os = new Object[column.size()];
 
@@ -346,7 +357,6 @@ public class DataBase {
         }
 
     }
-
     public String makeJTree(JTree tree) throws SQLException {
         DataBase = dataBaseStructure();
         String firstTable = DataBase.get(0).getTableName();
