@@ -76,7 +76,7 @@ public class DataBase {
         conn = DriverManager.getConnection(host, username, password);
         //execute("");
         dataBaseStructure();
-        System.out.println("colsed!");
+        System.out.println("Connected!");
         return conn;
     }
 
@@ -84,7 +84,7 @@ public class DataBase {
         dataBaseStructure();
         conn.close();
         stmnt.close();
-        System.out.println("Connected!");
+        System.out.println("Colsed!");
     }
 
     public void createTable(String tableName, String columnsValues) throws SQLException {
